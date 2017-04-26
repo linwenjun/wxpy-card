@@ -4,15 +4,10 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var punchRecordSchema = new Schema({
-  name: {
-        type: String,
-        required: true
-      },
-  type: {
-        type: String,
-        required: true
-      },
-  message: String,
+  puid: {
+    type: String,
+    required: true
+  },
   attachment: String,
   createdAt: {
     type: Number,
