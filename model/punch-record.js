@@ -8,10 +8,11 @@ var punchRecordSchema = new Schema({
     type: String,
     required: true
   },
+  name: String,
   attachment: String,
   createdAt: {
     type: Number,
-    default: parseInt(new Date().getTime() / 1000)
+    default: new Date().getTime()
   }
 });
 

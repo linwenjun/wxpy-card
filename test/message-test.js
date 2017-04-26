@@ -1,5 +1,6 @@
 const request = require('supertest');
 const assert = require('assert');
+const sinon = require('sinon');
 const config = require('config');
 const async = require('async');
 const mongoose = require('mongoose');
@@ -7,6 +8,7 @@ const app = require('../app.js');
 const SenderState = require('../model/sender-state');
 const PunchRecord = require('../model/punch-record');
 const __data_senderState = require('./fixture/sender-state.json');
+const __data_punchRecord = require('./fixture/punch-record.json');
 
 
 beforeEach((done)=> {
@@ -17,7 +19,7 @@ beforeEach((done)=> {
   }, (data, cb)=> {
     PunchRecord.remove(cb);
   }, (data, cb)=> {
-    PunchRecord.create(__data_senderState, cb)
+    PunchRecord.create(__data_punchRecord, cb)
   }], done)
 
 });
@@ -160,6 +162,80 @@ describe('POST /message', ()=> {
             assert.equal(doc.state, undefined);
             done();
           })
+        });
+  });
+
+  it('若有状态且消息类型为图片', (done)=> {
+
+    const puid = 3;
+
+    request(app)
+        .post('/message')
+        .set('Accept', 'application/json')
+        .send({
+          member: {
+            puid,
+            name: '小囧囧'
+          },
+          type: 'picture',
+          file: '001.jpg',
+          is_at: true
+        })
+        .expect(200)
+        .end((err, res)=> {
+          assert.deepEqual(res.body, {
+            type: 'text',
+            info: '小囧囧,你已经打卡成功了,你又向成功迈出了坚实的一步,恭喜!!'
+          });
+
+          async.waterfall([(callback)=> {
+            SenderState.findOne({puid}, (err, doc)=> {
+              assert.equal(doc.state, undefined);
+              callback(null, null)
+            });
+          }, (data, callback)=> {
+            PunchRecord.find({puid}, (err, docs)=> {
+              assert.equal(docs[docs.length-1].attachment, '001.jpg');
+              callback(null, null);
+            });
+          }], done)
+
+        });
+  });
+
+
+  it('获取打卡状态', (done)=> {
+    sinon.stub(Date.prototype, "getTime")
+        .returns(150);
+
+    const puid = 3;
+
+    request(app)
+        .post('/message')
+        .set('Accept', 'application/json')
+        .send({
+          member: {
+            puid,
+            name: '小囧囧'
+          },
+          type: 'text',
+          text: '@丢丢 芝麻开门',
+          is_at: true
+        })
+        .expect(200)
+        .end((err, res)=> {
+          assert.deepEqual(res.body, {
+            type: 'text',
+            info: `
+打卡情况
+============
+目前打卡人数:2
+============
+小种,
+小小种
+`.trim()
+          });
+          done();
         });
   });
 });
