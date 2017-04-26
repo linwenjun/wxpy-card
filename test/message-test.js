@@ -131,4 +131,35 @@ describe('POST /message', ()=> {
           })
         });
   });
+
+  // 若有状态且消息类型为其他,则打卡失败,状态切回无,"**,你这个人不讲究啊,说好的图片呢!重新@我吧"
+  it('若有状态且消息类型为其他', (done)=> {
+
+    const puid = 3;
+
+    request(app)
+        .post('/message')
+        .set('Accept', 'application/json')
+        .send({
+          member: {
+            puid,
+            name: '小囧囧'
+          },
+          type: 'text',
+          text: '我要打卡',
+          is_at: true
+        })
+        .expect(200)
+        .end((err, res)=> {
+          assert.deepEqual(res.body, {
+            type: 'text',
+            info: '小囧囧,你这个人不讲究啊,说好的图片呢!重新@我吧'
+          });
+
+          SenderState.findOne({puid}, (err, doc)=> {
+            assert.equal(doc.state, undefined);
+            done();
+          })
+        });
+  });
 });

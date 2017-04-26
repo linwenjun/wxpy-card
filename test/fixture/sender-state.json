@@ -2,5 +2,10 @@
   {
     "puid": 1,
     "wechatRoom": 1
+  },
+  {
+    "puid": 3,
+    "wechatRoom": 1,
+    "state": "recording"
   }
 ]
