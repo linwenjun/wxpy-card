@@ -5,7 +5,7 @@ import urllib
 import time 
 
 # 初始化机器人，扫码登陆
-bot = Bot(cache_path=True)
+bot = Bot(cache_path=True, console_qr=True)
 bot.enable_puid('wxpy_puid.pkl')
 
 def sendRequest(data):

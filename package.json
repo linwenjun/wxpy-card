@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon app.js",
+    "starts": "pm2",
     "test": "mocha"
   },
   "author": "",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "assert": "^1.4.1",
     "nodemon": "^1.11.0",
+    "pm2": "^2.4.6",
     "sinon": "^2.1.0",
     "supertest": "^3.0.0"
   }
