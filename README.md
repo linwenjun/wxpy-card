@@ -5,7 +5,6 @@
 ```
 # 安装依赖 需要安装 python3 和 pip3
 pip3 install -U git+https://github.com/youfou/wxpy.git@develop
-pip3 install -U json
 npm i
 
 # 运行 api
